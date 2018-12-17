@@ -5,7 +5,11 @@ var typeDefs = require("./prisma-schema").typeDefs;
 
 var models = [
   {
-    name: "Post",
+    name: "MsicApplication",
+    embedded: false
+  },
+  {
+    name: "MsicApplicationStatus",
     embedded: false
   },
   {
@@ -21,7 +25,11 @@ exports.Prisma = prisma_lib_1.makePrismaClientClass({
 exports.prisma = new exports.Prisma();
 var models = [
   {
-    name: "Post",
+    name: "MsicApplication",
+    embedded: false
+  },
+  {
+    name: "MsicApplicationStatus",
     embedded: false
   },
   {

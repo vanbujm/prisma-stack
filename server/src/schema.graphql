@@ -1,25 +1,46 @@
+enum MsicApplicationStatus {
+    DRAFT,
+    SUBMITTED_TO_AUSPOST,
+    AUSPOST_VERIFIED,
+    AUSPOST_REJECTED,
+    SUBMITTED_TO_AUSCHECK,
+    AUSCHECK_VERIFIED,
+    AUSCHECK_REJECTED,
+    AWAITING_PICKUP,
+    COMPLETE,
+    ERROR,
+    CANCELLED
+}
+
 type Query {
-  publishedPosts: [Post!]!
-  post(postId: ID!): Post
-  postsByUser(userId: ID!): [Post!]!
+    MsicApplication(id: ID!): MsicApplication
+    me: User!
+    users: [User!]!
 }
 
 type Mutation {
-  createUser(name: String!): User
-  createDraft(title: String!, userId: ID!): Post
-  publish(postId: ID!): Post
+    signup(email: String!, password: String!): AuthPayload!
+    login(email: String!, password: String!): AuthPayload!
+    createMsicApplication(status: MsicApplicationStatus!, user: ID!, firstName: String, lastName: String, address: String, dob: String): MsicApplication!
+}
+
+type AuthPayload {
+    token: String!
+    user: User!
 }
 
 type User {
-  id: ID!
-  email: String
-  name: String!
-  posts: [Post!]!
+    id: ID!
+    email: String
+    msicApplications: [MsicApplication!]
 }
 
-type Post {
-  id: ID!
-  title: String!
-  published: Boolean!
-  author: User
+type MsicApplication {
+    id: ID!
+    status: MsicApplicationStatus!
+    user: User!
+    firstName: String
+    lastName: String
+    address: String
+    dob: String
 }

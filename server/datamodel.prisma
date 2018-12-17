@@ -1,13 +1,30 @@
+enum MsicApplicationStatus {
+  DRAFT,
+  SUBMITTED_TO_AUSPOST,
+  AUSPOST_VERIFIED,
+  AUSPOST_REJECTED,
+  SUBMITTED_TO_AUSCHECK,
+  AUSCHECK_VERIFIED,
+  AUSCHECK_REJECTED,
+  AWAITING_PICKUP,
+  COMPLETE,
+  ERROR,
+  CANCELLED
+}
+
 type User {
   id: ID! @unique
   email: String @unique
-  name: String!
-  posts: [Post!]!
+  password: String!
+  MsicApplications: [MsicApplication!] @relation(name: "MsicApplications", onDelete: CASCADE)
 }
 
-type Post {
+type MsicApplication {
   id: ID! @unique
-  title: String!
-  published: Boolean! @default(value: "false")
-  author: User
+  status: MsicApplicationStatus! @default(value: "DRAFT")
+  user: User! @relation(name: "MsicApplications")
+  firstName: String
+  lastName: String
+  address: String
+  dob: DateTime
 }
