@@ -4,18 +4,18 @@ import { ApolloServer } from 'apollo-server-express';
 import cors from 'cors';
 import { json, urlencoded, text } from 'body-parser';
 import helmet from 'helmet';
-import jwt from 'express-jwt';
-import { prisma } from '../generated/prisma-client/index';
+import expressJwt from 'express-jwt';
+import { prisma } from '../generated/prisma-client';
 
 import logging from './logging';
-
+// @ts-ignore
 import typeDefs from './schema.graphql';
 import resolvers from './resolvers';
 
 const app = express();
 
-const authMiddleware = jwt({
-  secret: process.env.APP_SECRET,
+const authMiddleware = expressJwt({
+  secret: process.env.APP_SECRET || '',
   credentialsRequired: false
 });
 
@@ -27,11 +27,14 @@ app.use(logging);
 app.use(helmet());
 app.use(cors());
 
-const schema = makeExecutableSchema({ typeDefs, resolvers });
+const schema = makeExecutableSchema({
+  resolvers,
+  typeDefs
+});
 
 const server = new ApolloServer({
   schema,
-  context: ({ req }) => ({
+  context: ({ req }: { req: express.Request }) => ({
     ...req,
     prisma
   })

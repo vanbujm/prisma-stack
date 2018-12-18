@@ -16,13 +16,13 @@ type User {
   id: ID! @unique
   email: String @unique
   password: String!
-  MsicApplications: [MsicApplication!] @relation(name: "MsicApplications", onDelete: CASCADE)
+  MsicApplications: [MsicApplication!] @relation(name: "msicApplications", onDelete: CASCADE)
 }
 
 type MsicApplication {
   id: ID! @unique
   status: MsicApplicationStatus! @default(value: "DRAFT")
-  user: User! @relation(name: "MsicApplications")
+  user: User! @relation(name: "msicApplications")
   firstName: String
   lastName: String
   address: String

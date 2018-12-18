@@ -6,7 +6,10 @@
     "tslint-plugin-prettier"
   ],
   "rules": {
-    "prettier": true,
-    "no-console": false
+    "prettier": [true, "./.prettierrc"],
+    "no-console": false,
+    "import-name": false,
+    "variable-name": [true, "allow-leading-underscore"],
+    "function-name": false
   }
 }
