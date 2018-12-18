@@ -1,29 +1,32 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import { compare, hash } from 'bcryptjs';
+import { sign } from 'jsonwebtoken';
 import { getUserId } from './util';
 
+const appSecret = process.env.APP_SECRET;
+const tokenFields = ({ id, email }) => ({ userId: id, email });
+
 const auth = {
-  async signup(parent, args, context) {
-    const password = await bcrypt.hash(args.password, 10);
+  signup: async (parent, args, context) => {
+    const password = await hash(args.password, 10);
     const user = await context.prisma.createUser({ ...args, password });
 
     return {
-      token: jwt.sign({ userId: user.id }, process.env.APP_SECRET),
+      token: sign(tokenFields(user), appSecret),
       user
     };
   },
 
-  async login(parent, { email, password }, context) {
+  login: async (parent, { email, password }, context) => {
     const user = await context.prisma.user({ email });
-    if (!user) {
-      throw new Error(`No user found for email: ${email}`);
-    }
-    const passwordValid = await bcrypt.compare(password, user.password);
-    if (!passwordValid) {
-      throw new Error('Invalid password');
-    }
+
+    if (!user) throw new Error(`No user found for email: ${email}`);
+
+    const passwordValid = await compare(password, user.password);
+
+    if (!passwordValid) throw new Error('Invalid password');
+
     return {
-      token: jwt.sign({ userId: user.id }, process.env.APP_SECRET),
+      token: sign(tokenFields(user), appSecret),
       user
     };
   }
@@ -32,7 +35,7 @@ const auth = {
 const resolvers = {
   Query: {
     MsicApplication(parent, { id }, context) {
-      return context.prisma.msicApplication({ id: id });
+      return context.prisma.msicApplication({ id });
     },
     me(parent, args, context) {
       const id = getUserId(context);
@@ -44,23 +47,17 @@ const resolvers = {
   },
   Mutation: {
     ...auth,
-    createMsicApplication(parent, args, context) {
-      const creatObj = {
+    createMsicApplication: (parent, args, context) =>
+      context.prisma.createMsicApplication({
         ...args,
         user: { connect: { id: args.user } }
-      };
-      return context.prisma.createMsicApplication(creatObj);
-    }
+      })
   },
   User: {
-    msicApplications: ({ id }, args, context) => {
-      return context.prisma.user({ id }).MsicApplications();
-    }
+    msicApplications: ({ id }, args, context) => context.prisma.user({ id }).MsicApplications()
   },
   MsicApplication: {
-    user: ({ id }, args, context) => {
-      return context.prisma.msicApplication({ id }).user();
-    }
+    user: ({ id }, args, context) => context.prisma.msicApplication({ id }).user()
   }
 };
 

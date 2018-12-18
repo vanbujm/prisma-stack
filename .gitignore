@@ -1,2 +1,4 @@
 .idea
 /.vscode
+graphql.schema.json
+graphql.config.json
