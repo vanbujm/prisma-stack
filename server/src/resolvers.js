@@ -3,10 +3,10 @@ import { sign } from 'jsonwebtoken';
 import { getUserId } from './util';
 
 const appSecret = process.env.APP_SECRET;
-const tokenFields = ({ id, email }) => ({ userId: id, email: email });
+const tokenFields = ({ id, email }) => ({ userId: id, email });
 
 const auth = {
-  async signup(parent, args, context) {
+  signup: async (parent, args, context) => {
     const password = await hash(args.password, 10);
     const user = await context.prisma.createUser({ ...args, password });
 
@@ -16,7 +16,7 @@ const auth = {
     };
   },
 
-  async login(parent, { email, password }, context) {
+  login: async (parent, { email, password }, context) => {
     const user = await context.prisma.user({ email });
 
     if (!user) throw new Error(`No user found for email: ${email}`);
@@ -35,7 +35,7 @@ const auth = {
 const resolvers = {
   Query: {
     MsicApplication(parent, { id }, context) {
-      return context.prisma.msicApplication({ id: id });
+      return context.prisma.msicApplication({ id });
     },
     me(parent, args, context) {
       const id = getUserId(context);
@@ -47,23 +47,17 @@ const resolvers = {
   },
   Mutation: {
     ...auth,
-    createMsicApplication(parent, args, context) {
-      const creatObj = {
+    createMsicApplication: (parent, args, context) =>
+      context.prisma.createMsicApplication({
         ...args,
         user: { connect: { id: args.user } }
-      };
-      return context.prisma.createMsicApplication(creatObj);
-    }
+      })
   },
   User: {
-    msicApplications: ({ id }, args, context) => {
-      return context.prisma.user({ id }).MsicApplications();
-    }
+    msicApplications: ({ id }, args, context) => context.prisma.user({ id }).MsicApplications()
   },
   MsicApplication: {
-    user: ({ id }, args, context) => {
-      return context.prisma.msicApplication({ id }).user();
-    }
+    user: ({ id }, args, context) => context.prisma.msicApplication({ id }).user()
   }
 };
 
