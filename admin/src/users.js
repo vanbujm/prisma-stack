@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   List,
   Datagrid,
@@ -12,8 +13,15 @@ import {
   Create
 } from 'react-admin';
 
-const UserName = ({ record }) => {
-  return <span>User: {record ? `${record.name}` : '<unknown name>'}</span>;
+const UserName = ({ record: { name } }) => (
+  <span>
+    User:
+    {name ? `${name}` : '<unknown name>'}
+  </span>
+);
+
+UserName.propTypes = {
+  record: PropTypes.objectOf(PropTypes.string).isRequired
 };
 
 const UserFilter = props => (

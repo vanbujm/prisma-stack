@@ -15,7 +15,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    buildOpenCrudProvider({ client: client }).then(dataProvider =>
+    buildOpenCrudProvider({ client }).then(dataProvider =>
       this.setState({ dataProvider })
     );
   }
