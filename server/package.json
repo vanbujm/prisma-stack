@@ -10,6 +10,21 @@
     "start": "node dist/server.js",
     "test": "jest --watch"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "src/*.ts": [
+      "tslint --fix",
+      "git add"
+    ]
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -44,9 +59,12 @@
     "eslint-plugin-import": "2.14.0",
     "eslint-plugin-prettier": "3.0.0",
     "eslint-plugin-you-dont-need-lodash-underscore": "6.4.0",
+    "husky": "1.2.1",
     "jest": "23.6.0",
+    "lint-staged": "8.1.0",
     "prettier": "1.15.3",
     "tslint": "5.11.0",
+    "tslint-config-airbnb": "5.11.1",
     "tslint-config-prettier": "1.17.0",
     "tslint-eslint-rules": "5.4.0",
     "tslint-plugin-prettier": "2.0.1",
