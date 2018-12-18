@@ -6,7 +6,7 @@
   "scripts": {
     "build": "babel src -s -D -d dist",
     "server": "nodemon --exec yarn run babel-node --require node_modules/dotenv/config -- src/server.js",
-    "soap": "nodemon --exec yarn run babel-node -- src/soap.js",
+    "soap": "nodemon --exec yarn run babel-node -- src/soap.ts",
     "start": "node dist/server.js",
     "test": "jest --watch"
   },
