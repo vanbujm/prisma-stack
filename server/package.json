@@ -6,6 +6,7 @@
   "scripts": {
     "build": "babel src -s -D -d dist",
     "server": "nodemon --exec yarn run babel-node --require node_modules/dotenv/config -- src/server.js",
+    "soap": "nodemon --exec yarn run babel-node -- src/soap.js",
     "start": "node dist/server.js",
     "test": "jest --watch"
   },
@@ -25,7 +26,8 @@
     "helmet": "3.15.0",
     "jsonwebtoken": "8.4.0",
     "morgan": "1.9.1",
-    "prisma-client-lib": "1.22.2"
+    "prisma-client-lib": "1.22.2",
+    "soap": "^0.25.0"
   },
   "devDependencies": {
     "@babel/cli": "7.2.0",
