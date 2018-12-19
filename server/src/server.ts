@@ -8,7 +8,7 @@ import expressJwt from 'express-jwt';
 import { prisma } from '../generated/prisma-client';
 
 import logging from './logging';
-// @ts-ignore
+// @ts-ignore (ts doesn't understand .graphql files)
 import typeDefs from './schema.graphql';
 import resolvers from './resolvers';
 

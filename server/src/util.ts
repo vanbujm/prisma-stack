@@ -6,7 +6,7 @@ export class AuthError extends Error {
   }
 }
 
-export const getUserId = ({ user }: { user: User }) => {
+export const getUserId = ({ user }: { user?: User }) => {
   if (user) return user.userId;
   throw new AuthError();
 };
