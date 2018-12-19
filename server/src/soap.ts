@@ -1,21 +1,25 @@
-var soap = require('soap');
-
+import soap from 'soap';
+import xmlFormatter from 'xml-formatter';
 /*
 public WSDL file for testing which I found on StackOverflow:
     http://www.dataaccess.com/webservicesserver/numberconversion.wso?WSDL
 */
 
-var url =
-  'http://www.dataaccess.com/webservicesserver/numberconversion.wso?WSDL';
+const url = 'http://www.dataaccess.com/webservicesserver/numberconversion.wso?WSDL';
 
 /*
   soap for node
   https://www.npmjs.com/package/soap
 */
 
-var wsdlOptions = {
+const wsdlOptions: soap.IOptions = {
   forceSoap12Headers: true,
   envelopeKey: 'IEAEnvelope'
+  // wsdl_headers: {
+  //   Header: {
+  //     BatchDateTime: 'somevalue'
+  //   }
+  // }
 };
 
 // let wsdlOptions = {
@@ -41,7 +45,7 @@ var wsdlOptions = {
 // };
 
 soap.createClient(url, wsdlOptions, (err, numberConversionClient) => {
-  let clientDescription = numberConversionClient.describe();
+  // const clientDescription = numberConversionClient.wsdl.describeServices();
 
   /*
   numberConversionClient.on('request', (xml, eid) => {
@@ -55,21 +59,20 @@ soap.createClient(url, wsdlOptions, (err, numberConversionClient) => {
     console.log(`soapError: \r\n\t${error}`);
   });
 
-  var args = { ubiNum: 2 };
+  const args = { ubiNum: 2 };
 
-  numberConversionClient.NumberToWordsAsync(args).then(
-    response => {
-      let resultJSObj = response[0];
-      let rawXMLResponse = response[1];
-      let soapHeaderJSObj = response[2];
-      let rawXMLRequest = response[3];
+  (numberConversionClient as any).NumberToWordsAsync(args).then(
+    (response: any[]) => {
+      const resultJSObj = response[0];
+      const rawXMLResponse = response[1];
+      const soapHeaderJSObj = response[2];
+      const rawXMLRequest = response[3];
 
-      console.log(`resultJSObj: \r\n\t${JSON.stringify(resultJSObj)}`);
-      console.log(`rawXMLResponse: \r\n\t${rawXMLResponse}`);
-      console.log(`soapHeaderJSObj: \r\n\t${JSON.stringify(soapHeaderJSObj)}`);
-      console.log(`rawXMLRequest: \r\n\t${rawXMLRequest}`);
+      // console.log(`rawXMLResponse: \r\n\t${rawXMLResponse}`);
+      // console.log(`soapHeaderJSObj: \r\n\t${JSON.stringify(soapHeaderJSObj)}`);
+      console.log(`rawXMLRequest: \r\n\r\n${xmlFormatter(rawXMLRequest)}`);
     },
-    error => {
+    (error: any) => {
       console.log(error);
     }
   );
@@ -79,5 +82,3 @@ soap.createClient(url, wsdlOptions, (err, numberConversionClient) => {
   //     console.log(result);
   // });
 });
-
-console.log('Running...');

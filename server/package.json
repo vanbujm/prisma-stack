@@ -6,7 +6,7 @@
   "scripts": {
     "build": "babel src -s -D -d dist --extensions '.js,.jsx,.ts,.tsx'",
     "server": "nodemon --exec yarn run babel-node --require node_modules/dotenv/config -- src/server.ts --extensions '.js,.jsx,.ts,.tsx'",
-    "soap": "nodemon --exec yarn run babel-node -- src/soap.ts",
+    "soap": "nodemon --exec yarn run babel-node -- src/soap.ts --extensions '.js,.jsx,.ts,.tsx'",
     "start": "node dist/server.js",
     "test": "jest --watch"
   },
@@ -45,16 +45,16 @@
     "soap": "^0.25.0"
   },
   "devDependencies": {
-    "@types/bcryptjs": "2.4.2",
-    "@types/jsonwebtoken": "8.3.0",
-    "@types/morgan": "1.7.35",
     "@babel/cli": "7.2.0",
     "@babel/core": "7.2.0",
     "@babel/node": "7.2.0",
     "@babel/preset-env": "7.2.0",
     "@babel/preset-typescript": "7.1.0",
+    "@types/bcryptjs": "2.4.2",
     "@types/express-jwt": "0.0.40",
     "@types/helmet": "0.0.42",
+    "@types/jsonwebtoken": "8.3.0",
+    "@types/morgan": "1.7.35",
     "@types/node": "10.12.15",
     "babel-core": "6.26.3",
     "babel-jest": "23.6.0",
@@ -76,6 +76,7 @@
     "tslint-eslint-rules": "5.4.0",
     "tslint-plugin-prettier": "2.0.1",
     "tslint-react": "3.6.0",
-    "typescript": "3.2.2"
+    "typescript": "3.2.2",
+    "xml-formatter": "^1.0.1"
   }
 }
