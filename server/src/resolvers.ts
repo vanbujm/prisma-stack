@@ -1,15 +1,15 @@
 import { compare, hash } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { getUserId } from './util';
-import { ApolloContext } from './types';
+import { ApolloContext, AuthPayload, UserCredentials } from './types';
 
 const appSecret = process.env.APP_SECRET || '';
 const tokenFields = ({ id, email }: { id?: string; email?: string }) => ({ email, userId: id });
 
 const auth = {
-  signup: async (_parent: any, args: { password: string }, context: ApolloContext) => {
-    const password = await hash(args.password, 10);
-    const user = await context.prisma.createUser({ ...args, password });
+  signup: async (_parent: any, { password, email }: UserCredentials, context: ApolloContext): Promise<AuthPayload> => {
+    const saltedPassword = await hash(password, 10);
+    const user = await context.prisma.createUser({ email, password: saltedPassword });
 
     return {
       user,
@@ -17,7 +17,7 @@ const auth = {
     };
   },
 
-  login: async (_parent: any, { email, password }: { email: string; password: string }, context: ApolloContext) => {
+  login: async (_parent: any, { email, password }: UserCredentials, context: ApolloContext) => {
     const user = await context.prisma.user({ email });
 
     if (!user) throw new Error(`No user found for email: ${email}`);

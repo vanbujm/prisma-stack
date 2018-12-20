@@ -6,15 +6,19 @@ const formatStatusCode = (status: string) => chalk`{${statusOk(status) ? 'blue' 
 
 const formatBody = (body: object) => JSON.stringify(body, null, 2);
 
-const morganChalk = morgan((tokens, req, res) =>
+const canDisplayBody = (body?: object): boolean => {
+  const inDevelopment = process.env.NODE_ENV === 'development';
+  const bodyIsNotEmpty = body !== undefined && Object.keys(<object>body).length > 0;
+  return inDevelopment && bodyIsNotEmpty;
+};
+
+export const morganChalk = morgan((tokens, req, res) =>
   [
     chalk`{green.bold ${tokens.method(req, res)}}`,
     formatStatusCode(tokens.status(req, res)),
     chalk`{white ${tokens.url(req, res)}}`,
     chalk`{yellow ${tokens['response-time'](req, res)} ms}`,
-    req.body && process.env.NODE_ENV === 'development'
-      ? chalk`\n{cyan.bold BODY}\n{magenta ${formatBody(req.body)}}`
-      : null
+    canDisplayBody(req.body) ? chalk`\n{cyan.bold BODY}\n{magenta ${formatBody(req.body)}}` : null
   ].join(' ')
 );
 

@@ -1,11 +1,21 @@
-import { Prisma } from '../../generated/prisma-client';
+import { Prisma, User } from '../../generated/prisma-client';
 
-export interface User {
+export interface AuthPayload {
+  user: User,
+  token: string
+}
+
+export interface UserCredentials {
+  readonly email: string
+  readonly password: string
+}
+
+export interface UserAuthDetails {
   readonly userId: string;
   readonly email: string;
 }
 
 export interface ApolloContext {
   prisma: Prisma;
-  user?: User;
+  user?: UserAuthDetails;
 }
