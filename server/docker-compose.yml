@@ -27,5 +27,13 @@ services:
       POSTGRES_PASSWORD: prisma
     volumes:
     - postgres:/var/lib/postgresql/data
+   sftp:
+    image: atmoz/sftp
+    volumes:
+        - /host/upload:/home/foo/upload
+    ports:
+        - "2222:22"
+    command: foo:pass:1001
+
 volumes:
   postgres:
