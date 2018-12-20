@@ -5,10 +5,12 @@
   "main": "src/server.js",
   "scripts": {
     "build": "babel src -s -D -d dist --extensions '.js,.jsx,.ts,.tsx'",
-    "server": "nodemon --exec yarn run babel-node --require node_modules/dotenv/config -- src/server.ts --extensions '.js,.jsx,.ts,.tsx'",
+    "server": "nodemon --exec yarn run babel-node --require node_modules/dotenv/config --ignore src/worker.ts -- src/server.ts --extensions '.js,.jsx,.ts,.tsx'",
+    "worker": "nodemon --exec yarn run babel-node --require node_modules/dotenv/config --watch src/worker.ts -- src/worker.ts --extensions '.js,.jsx,.ts,.tsx'",
     "soap": "nodemon --exec yarn run babel-node -- src/soap.ts --extensions '.js,.jsx,.ts,.tsx'",
     "start": "node dist/server.js",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn worker\""
   },
   "husky": {
     "hooks": {
@@ -41,6 +43,7 @@
     "helmet": "3.15.0",
     "jsonwebtoken": "8.4.0",
     "morgan": "1.9.1",
+    "pg-boss": "3.1.2",
     "prisma-client-lib": "1.22.2",
     "soap": "^0.25.0"
   },
@@ -59,6 +62,7 @@
     "babel-core": "6.26.3",
     "babel-jest": "23.6.0",
     "babel-plugin-graphql-import": "2.0.0",
+    "concurrently": "4.1.0",
     "eslint": "5.10.0",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-config-prettier": "3.3.0",
