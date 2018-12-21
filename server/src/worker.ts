@@ -1,43 +1,19 @@
-import PgBoss from 'pg-boss';
+// import {defaultQueue} from './bull';
+import { defaultProcessor } from './jobs';
+import Queue from 'bull';
 import chalk from 'chalk';
 
 const cluster = require('cluster');
 const cpus = require('os').cpus();
 
-const options = {
-  host: 'localhost',
-  database: 'prisma',
-  user: 'prisma',
-  password: 'prisma',
-  poolSize: 5
-};
+const { REDIS_PORT, REDIS_HOST } = process.env || { REDIS_PORT: '', REDIS_HOST: '' };
 
 if (cluster.isMaster) {
   console.log(chalk`{black.bold  Worker Server is running }`);
 
-  const boss = new PgBoss(options);
-
   cpus.forEach(() => cluster.fork());
-
-  boss.start().then(() => {
-    cluster.on('exit', ({ process: { pid } }: { process: { pid: number } }) => {
-      console.log(`worker ${pid} died`);
-    });
-  });
 } else {
+  const defaultQueue = new Queue('default queue', `redis://${REDIS_HOST}:${REDIS_PORT}`);
   console.log(chalk`{black.bold  Worker ${process.pid.toString()} started }`);
-  const queue = 'some-queue';
-
-  const boss = new PgBoss(options);
-
-  const someAsyncJobHandler = async (job: any) => {
-    console.log(chalk`{black.bold  Worker:${process.pid.toString()}: } {blue.bold job received}: ${job.id}`);
-    console.log(
-      chalk`{black.bold  Worker:${process.pid.toString()}: } {magenta.bold Data:}{magenta ${JSON.stringify(job.data)}}`
-    );
-  };
-
-  boss.connect().then(boss => {
-    boss.subscribe(queue, someAsyncJobHandler);
-  });
+  defaultQueue.process(defaultProcessor);
 }
