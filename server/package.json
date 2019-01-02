@@ -8,6 +8,7 @@
     "server": "nodemon --exec yarn run babel-node --require node_modules/dotenv/config --ignore src/worker.ts -- src/server.ts --extensions '.js,.jsx,.ts,.tsx'",
     "worker": "nodemon --exec yarn run babel-node --require node_modules/dotenv/config --watch src/worker.ts -- src/worker.ts --extensions '.js,.jsx,.ts,.tsx'",
     "soap": "nodemon --exec yarn run babel-node -- src/soap.ts --extensions '.js,.jsx,.ts,.tsx'",
+    "auspost-checksum": "nodemon --exec yarn run babel-node -- src/auspost-checksum.ts --extensions '.js,.jsx,.ts,.tsx'",
     "start": "node dist/server.js",
     "test": "jest --watch",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn worker\""
