@@ -73,24 +73,27 @@ function logTestResult(test: string, actual: string, expected: string) {
   );
 }
 
+function executeTest(input: string, expected: string) {
+  const actual = calculateCheckSum(input);
+  const test = `calculateCheckSum(${input})`;
+  logTestResult(test, actual, expected);
+}
+
 const main = () => {
   const FAILED_CODE = 'ERROR';
 
-  let actual = calculateCheckSum('');
-  let test = "calculateCheckSum('')";
-  logTestResult(test, actual, FAILED_CODE);
-
-  actual = calculateCheckSum('4714ZB50518052155556666555500');
-  test = "calculateCheckSum('4714ZB50518052155556666555500')";
-  logTestResult(test, actual, '25');
-
-  actual = calculateCheckSum('4714ZB50500000010000000121234');
-  test = "calculateCheckSum('4714ZB50500000010000000121234')";
-  logTestResult(test, actual, '72');
-
-  actual = calculateCheckSum('4714ZB50518062112345678901234');
-  test = "calculateCheckSum('4714ZB50518062112345678901234')";
-  logTestResult(test, actual, '04');
+  executeTest('', FAILED_CODE);
+  executeTest('4714ZB50518052155556666555500', '25');
+  executeTest('4714ZB50500000010000000121234', '72');
+  executeTest('4714ZB50518062112345678901234', '04');
+  executeTest('4714ZB50518072110345678901234', '83');
+  executeTest('4714ZB50518082110045678901234', '47');
+  executeTest('4714ZB50518092110005678901234', '94');
+  executeTest('4714ZB50518102110000678901234', '29');
+  executeTest('4714ZB50518112110000078901234', '72');
+  executeTest('4714ZB50518122110000008901234', '28');
+  executeTest('4714ZB50518042110000000901234', '16');
+  executeTest('4714ZB50518032110000000121234', '51');
 };
 
 main();
