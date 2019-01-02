@@ -1,4 +1,4 @@
-export function calculateCheckSum(input: string): number {
+export function calculateCheckSum(input: string): string {
   // TC 4714 (505) Atlas Programmed Marine Pty Ltd MSIC_ASIC EIS ID Checks Specification.docx
   // 5Check Digit Calculation
   const weights = [
@@ -54,24 +54,43 @@ export function calculateCheckSum(input: string): number {
       sum += toIntValue * weights[i];
     }
 
-    return 97 - (sum % 97);
+    const checkSumNumber = 97 - (sum % 97);
+
+    if (checkSumNumber < 10) {
+      return `0${checkSumNumber}`;
+    }
+
+    return checkSumNumber.toString();
   }
 
-  return -100; // invalid input value
+  return 'ERROR'; // invalid input value
   // throw new Error('Failed to calculate checksum,  input value must be 29 chracters');
 }
 
+function logTestResult(test: string, actual: string, expected: string) {
+  console.log(
+    `${test} passed: ${actual === expected}${actual === expected ? '' : `, expected ${actual} to be ${expected}`}`
+  );
+}
+
 const main = () => {
-  const FAILED_CODE = -100;
+  const FAILED_CODE = 'ERROR';
 
   let actual = calculateCheckSum('');
   let test = "calculateCheckSum('')";
-
-  console.log(`${test} passed: ${actual === FAILED_CODE}`);
+  logTestResult(test, actual, FAILED_CODE);
 
   actual = calculateCheckSum('4714ZB50518052155556666555500');
   test = "calculateCheckSum('4714ZB50518052155556666555500')";
-  console.log(`${test} passed: ${actual === 25}${actual === 25 ? '' : `, actual = ${actual}`}`);
+  logTestResult(test, actual, '25');
+
+  actual = calculateCheckSum('4714ZB50500000010000000121234');
+  test = "calculateCheckSum('4714ZB50500000010000000121234')";
+  logTestResult(test, actual, '72');
+
+  actual = calculateCheckSum('4714ZB50518062112345678901234');
+  test = "calculateCheckSum('4714ZB50518062112345678901234')";
+  logTestResult(test, actual, '04');
 };
 
 main();
