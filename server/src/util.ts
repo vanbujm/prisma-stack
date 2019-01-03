@@ -1,4 +1,4 @@
-import { User } from './types';
+import { RedisOptions, UserAuthDetails } from './types';
 
 export class AuthError extends Error {
   constructor() {
@@ -6,11 +6,17 @@ export class AuthError extends Error {
   }
 }
 
-export const getUserId = ({ user }: { user?: User }) => {
+export const getUserId = ({ user }: { user?: UserAuthDetails }) => {
   if (user) return user.userId;
   throw new AuthError();
 };
 
-export default {
-  getUserId
+export const validateRedisConfig = (): RedisOptions => {
+  const { REDIS_PORT, REDIS_HOST } = process.env;
+  if (REDIS_PORT === undefined || REDIS_HOST === undefined) {
+    throw Error('REDIS_PORT and REDIS_HOST env variables are required ');
+  }
+  if (isNaN(Number(REDIS_PORT))) throw Error('REDIS_PORT must be a number');
+
+  return { host: REDIS_HOST, port: REDIS_PORT };
 };

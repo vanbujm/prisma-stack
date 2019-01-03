@@ -2,22 +2,23 @@ import { makeExecutableSchema } from 'apollo-server';
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import cors from 'cors';
-import { json, urlencoded, text } from 'body-parser';
+import { json, text, urlencoded } from 'body-parser';
 import helmet from 'helmet';
 import expressJwt from 'express-jwt';
 import { prisma } from '../generated/prisma-client';
+import Queue from 'bull';
 import Arena from 'bull-arena';
 
 import logging from './logging';
-// import {defaultQueue} from './bull';
+import resolvers from './resolvers';
 // @ts-ignore (ts doesn't understand .graphql files)
 import typeDefs from './schema.graphql';
-import resolvers from './resolvers';
-import Queue from 'bull';
+import { validateRedisConfig } from './util';
 
 const run = async (): Promise<void> => {
-  const { REDIS_PORT, REDIS_HOST } = process.env || { REDIS_PORT: '', REDIS_HOST: '' };
-  const defaultQueue = new Queue('default queue', `redis://${REDIS_HOST}:${REDIS_PORT}`);
+  const { port, host } = validateRedisConfig();
+
+  const defaultQueue = new Queue('default queue', `redis://${host}:${port}`);
   const app = express();
 
   const authMiddleware = expressJwt({
@@ -30,24 +31,21 @@ const run = async (): Promise<void> => {
       queues: [
         {
           // Name of the bull queue, this name must match up exactly with what you've defined in bull.
-          name: 'default queue',
+          name: 'default-queue',
 
           // Hostname or queue prefix, you can put whatever you want.
-          hostId: 'Bull Queues',
+          hostId: 'bull-queues',
 
           // Redis auth.
           redis: {
-            port: REDIS_PORT,
-            host: REDIS_HOST
+            port,
+            host
           }
         }
       ]
     },
     {
-      // Make the arena dashboard become available at {my-site.com}/arena.
       basePath: '/arena',
-
-      // Let express handle the listening.
       disableListen: true
     }
   );
@@ -69,17 +67,14 @@ const run = async (): Promise<void> => {
   const server = new ApolloServer({
     schema,
     context: ({ req }: { req: express.Request }) => ({
-      ...req,
-      prisma
+      prisma,
+      user: req.user
     })
   });
 
   server.applyMiddleware({ app, path: '/api' });
 
   app.get('/auspost', async (_req, res) => {
-    // defaultQueue.add({ auspostID: '1234' });
-    // defaultQueue.process((job) => console.log('dfjkashdflkahsldkfhaskljdfhklajsdhflkjashdflkjahsdkljfh'));
-    // await boss.publish(queue, { auspostID: '1234' });
     defaultQueue.add({ auspostID: '1234' });
     res.send('Aus Post job queued');
   });
