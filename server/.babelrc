@@ -1,7 +1,13 @@
 {
   "presets": [
-    "@babel/env",
-    "@babel/preset-typescript"
+    "@babel/preset-typescript",
+    [
+      "@babel/env", {
+      "targets": {
+        "node": "current"
+      }
+    }
+    ]
   ],
   "plugins": ["babel-plugin-graphql-import"]
 }
