@@ -194,6 +194,8 @@ export type UserOrderByInput =
   | "email_DESC"
   | "password_ASC"
   | "password_DESC"
+  | "isVerified_ASC"
+  | "isVerified_DESC"
   | "createdAt_ASC"
   | "createdAt_DESC"
   | "updatedAt_ASC"
@@ -326,6 +328,8 @@ export interface UserWhereInput {
   MsicApplications_every?: MsicApplicationWhereInput;
   MsicApplications_some?: MsicApplicationWhereInput;
   MsicApplications_none?: MsicApplicationWhereInput;
+  isVerified?: Boolean;
+  isVerified_not?: Boolean;
   AND?: UserWhereInput[] | UserWhereInput;
   OR?: UserWhereInput[] | UserWhereInput;
   NOT?: UserWhereInput[] | UserWhereInput;
@@ -353,6 +357,7 @@ export interface UserCreateOneWithoutMsicApplicationsInput {
 export interface UserCreateWithoutMsicApplicationsInput {
   email?: String;
   password: String;
+  isVerified?: Boolean;
 }
 
 export interface MsicApplicationUpdateInput {
@@ -374,6 +379,7 @@ export interface UserUpdateOneRequiredWithoutMsicApplicationsInput {
 export interface UserUpdateWithoutMsicApplicationsDataInput {
   email?: String;
   password?: String;
+  isVerified?: Boolean;
 }
 
 export interface UserUpsertWithoutMsicApplicationsInput {
@@ -393,6 +399,7 @@ export interface UserCreateInput {
   email?: String;
   password: String;
   MsicApplications?: MsicApplicationCreateManyWithoutUserInput;
+  isVerified?: Boolean;
 }
 
 export interface MsicApplicationCreateManyWithoutUserInput {
@@ -414,6 +421,7 @@ export interface UserUpdateInput {
   email?: String;
   password?: String;
   MsicApplications?: MsicApplicationUpdateManyWithoutUserInput;
+  isVerified?: Boolean;
 }
 
 export interface MsicApplicationUpdateManyWithoutUserInput {
@@ -548,6 +556,7 @@ export interface MsicApplicationUpdateManyDataInput {
 export interface UserUpdateManyMutationInput {
   email?: String;
   password?: String;
+  isVerified?: Boolean;
 }
 
 export interface MsicApplicationSubscriptionWhereInput {
@@ -619,6 +628,7 @@ export interface User {
   id: ID_Output;
   email?: String;
   password: String;
+  isVerified?: Boolean;
 }
 
 export interface UserPromise extends Promise<User>, Fragmentable {
@@ -636,6 +646,7 @@ export interface UserPromise extends Promise<User>, Fragmentable {
       last?: Int;
     }
   ) => T;
+  isVerified: () => Promise<Boolean>;
 }
 
 export interface UserSubscription
@@ -655,6 +666,7 @@ export interface UserSubscription
       last?: Int;
     }
   ) => T;
+  isVerified: () => Promise<AsyncIterator<Boolean>>;
 }
 
 export interface MsicApplicationConnection {}
@@ -879,6 +891,7 @@ export interface UserPreviousValues {
   id: ID_Output;
   email?: String;
   password: String;
+  isVerified?: Boolean;
 }
 
 export interface UserPreviousValuesPromise
@@ -887,6 +900,7 @@ export interface UserPreviousValuesPromise
   id: () => Promise<ID_Output>;
   email: () => Promise<String>;
   password: () => Promise<String>;
+  isVerified: () => Promise<Boolean>;
 }
 
 export interface UserPreviousValuesSubscription
@@ -895,6 +909,7 @@ export interface UserPreviousValuesSubscription
   id: () => Promise<AsyncIterator<ID_Output>>;
   email: () => Promise<AsyncIterator<String>>;
   password: () => Promise<AsyncIterator<String>>;
+  isVerified: () => Promise<AsyncIterator<Boolean>>;
 }
 
 /*
@@ -907,6 +922,11 @@ export type ID_Output = string;
 The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
 */
 export type String = string;
+
+/*
+The `Boolean` scalar type represents `true` or `false`.
+*/
+export type Boolean = boolean;
 
 /*
 DateTime scalar input type, allowing Date
@@ -922,11 +942,6 @@ export type DateTimeOutput = string;
 The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. 
 */
 export type Int = number;
-
-/*
-The `Boolean` scalar type represents `true` or `false`.
-*/
-export type Boolean = boolean;
 
 export type Long = string;
 

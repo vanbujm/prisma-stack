@@ -20,12 +20,6 @@ type User {
   isVerified: Boolean @default(value: false)
 }
 
-type VerificationToken {
-    id: ID! @unique
-    user: User! @relation(name: "MsicApplications")
-    token: String!
-}
-
 type MsicApplication {
   id: ID! @unique
   status: MsicApplicationStatus! @default(value: "DRAFT")

@@ -1,15 +1,10 @@
-import { RedisOptions, UserAuthDetails } from './types';
+import { RedisOptions } from './types';
 
 export class AuthError extends Error {
   constructor() {
     super('Not authorized');
   }
 }
-
-export const getUserId = ({ user }: { user?: UserAuthDetails }) => {
-  if (user) return user.userId;
-  throw new AuthError();
-};
 
 export const validateRedisConfig = (): RedisOptions => {
   const { REDIS_PORT, REDIS_HOST } = process.env;

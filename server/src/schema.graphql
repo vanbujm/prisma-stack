@@ -13,26 +13,24 @@ enum MsicApplicationStatus {
 }
 
 type Query {
-    MsicApplication(id: ID!): MsicApplication
     me: User!
-    users: [User!]!
 }
 
 type Mutation {
     signup(email: String!, password: String!): AuthPayload!
     login(email: String!, password: String!): AuthPayload!
-    createMsicApplication(status: MsicApplicationStatus!, user: ID!, firstName: String, lastName: String, address: String, dob: String): MsicApplication!
-}
-
-type AuthPayload {
-    token: String!
-    user: User!
+    createMsicApplication(firstName: String, lastName: String, address: String, dob: String): MsicApplication!
 }
 
 type User {
     id: ID!
     email: String
     msicApplications: [MsicApplication!]
+}
+
+type AuthPayload {
+    token: String!
+    user: User!
 }
 
 type MsicApplication {

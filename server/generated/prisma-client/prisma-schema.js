@@ -383,6 +383,7 @@ type User {
   email: String
   password: String!
   MsicApplications(where: MsicApplicationWhereInput, orderBy: MsicApplicationOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [MsicApplication!]
+  isVerified: Boolean
 }
 
 type UserConnection {
@@ -395,6 +396,7 @@ input UserCreateInput {
   email: String
   password: String!
   MsicApplications: MsicApplicationCreateManyWithoutUserInput
+  isVerified: Boolean
 }
 
 input UserCreateOneWithoutMsicApplicationsInput {
@@ -405,6 +407,7 @@ input UserCreateOneWithoutMsicApplicationsInput {
 input UserCreateWithoutMsicApplicationsInput {
   email: String
   password: String!
+  isVerified: Boolean
 }
 
 type UserEdge {
@@ -419,6 +422,8 @@ enum UserOrderByInput {
   email_DESC
   password_ASC
   password_DESC
+  isVerified_ASC
+  isVerified_DESC
   createdAt_ASC
   createdAt_DESC
   updatedAt_ASC
@@ -429,6 +434,7 @@ type UserPreviousValues {
   id: ID!
   email: String
   password: String!
+  isVerified: Boolean
 }
 
 type UserSubscriptionPayload {
@@ -453,11 +459,13 @@ input UserUpdateInput {
   email: String
   password: String
   MsicApplications: MsicApplicationUpdateManyWithoutUserInput
+  isVerified: Boolean
 }
 
 input UserUpdateManyMutationInput {
   email: String
   password: String
+  isVerified: Boolean
 }
 
 input UserUpdateOneRequiredWithoutMsicApplicationsInput {
@@ -470,6 +478,7 @@ input UserUpdateOneRequiredWithoutMsicApplicationsInput {
 input UserUpdateWithoutMsicApplicationsDataInput {
   email: String
   password: String
+  isVerified: Boolean
 }
 
 input UserUpsertWithoutMsicApplicationsInput {
@@ -523,6 +532,8 @@ input UserWhereInput {
   MsicApplications_every: MsicApplicationWhereInput
   MsicApplications_some: MsicApplicationWhereInput
   MsicApplications_none: MsicApplicationWhereInput
+  isVerified: Boolean
+  isVerified_not: Boolean
   AND: [UserWhereInput!]
   OR: [UserWhereInput!]
   NOT: [UserWhereInput!]

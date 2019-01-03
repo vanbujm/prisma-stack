@@ -11,14 +11,61 @@ import Arena from 'bull-arena';
 
 import logging from './logging';
 import resolvers from './resolvers';
-// @ts-ignore (ts doesn't understand .graphql files)
-import typeDefs from './schema.graphql';
+
+// import typeDefs from './schema.graphql';
 import { validateRedisConfig } from './util';
 
-const run = async (): Promise<void> => {
-  const { port, host } = validateRedisConfig();
+const typeDefs = `
+enum MsicApplicationStatus {
+    DRAFT,
+    SUBMITTED_TO_AUSPOST,
+    AUSPOST_VERIFIED,
+    AUSPOST_REJECTED,
+    SUBMITTED_TO_AUSCHECK,
+    AUSCHECK_VERIFIED,
+    AUSCHECK_REJECTED,
+    AWAITING_PICKUP,
+    COMPLETE,
+    ERROR,
+    CANCELLED
+}
 
-  const defaultQueue = new Queue('default queue', `redis://${host}:${port}`);
+type Query {
+    me: User!
+}
+
+type Mutation {
+    signup(email: String!, password: String!): AuthPayload!
+    login(email: String!, password: String!): AuthPayload!
+    createMsicApplication(firstName: String, lastName: String, address: String, dob: String): MsicApplication!
+}
+
+type User {
+    id: ID!
+    email: String
+    msicApplications: [MsicApplication!]
+}
+
+type AuthPayload {
+    token: String!
+    user: User!
+}
+
+type MsicApplication {
+    id: ID!
+    status: MsicApplicationStatus!
+    user: User!
+    firstName: String
+    lastName: String
+    address: String
+    dob: String
+}
+`;
+
+const run = async (): Promise<void> => {
+  const { port: redisPort, host: redisHost } = validateRedisConfig();
+
+  const defaultQueue = new Queue('default queue', `redis://${redisHost}:${redisPort}`);
   const app = express();
 
   const authMiddleware = expressJwt({
@@ -38,8 +85,8 @@ const run = async (): Promise<void> => {
 
           // Redis auth.
           redis: {
-            port,
-            host
+            port: redisPort,
+            host: redisHost
           }
         }
       ]
@@ -72,7 +119,7 @@ const run = async (): Promise<void> => {
     })
   });
 
-  server.applyMiddleware({ app, path: '/api' });
+  server.applyMiddleware({ app, path: '/graphql' });
 
   app.get('/auspost', async (_req, res) => {
     defaultQueue.add({ auspostID: '1234' });

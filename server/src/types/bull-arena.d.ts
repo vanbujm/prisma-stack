@@ -11,12 +11,12 @@ declare module 'bull-arena' {
     }
 
     export interface ArenaOptions {
-      queues?: QueueOptions[];
+      queues: QueueOptions[];
     }
 
     export interface ArenaWebOptions {
-      basePath?: string;
-      disableListen?: boolean;
+      basePath: string;
+      disableListen: boolean;
     }
   }
 
