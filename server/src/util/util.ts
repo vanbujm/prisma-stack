@@ -1,11 +1,6 @@
 import { RedisOptions } from '../types';
 import Arena from 'bull-arena';
-
-export class AuthError extends Error {
-  constructor() {
-    super('Not authorized');
-  }
-}
+import { AppSecretRequiredError, NaNError, RedisConfigRequiredError } from '../errors';
 
 export const getAppSecret = (): string => {
   if (!process.env.APP_SECRET) throw new AppSecretRequiredError();
@@ -15,9 +10,9 @@ export const getAppSecret = (): string => {
 export const validateRedisConfig = (): RedisOptions => {
   const { REDIS_PORT, REDIS_HOST } = process.env;
   if (REDIS_PORT === undefined || REDIS_HOST === undefined) {
-    throw Error('REDIS_PORT and REDIS_HOST env variables are required ');
+    throw new RedisConfigRequiredError();
   }
-  if (isNaN(Number(REDIS_PORT))) throw Error('REDIS_PORT must be a number');
+  if (isNaN(Number(REDIS_PORT))) throw new NaNError('REDIS_PORT');
 
   return { host: REDIS_HOST, port: REDIS_PORT };
 };

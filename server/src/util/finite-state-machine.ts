@@ -4,6 +4,7 @@
 import StateMachine from 'javascript-state-machine';
 import { MsicApplication } from '../../generated/prisma-client';
 import { ApolloContext, FsmMethodArgs, MsicStatusHash } from '../types';
+import { InvalidTransitionError } from '../errors';
 
 export const msicStates: MsicStatusHash = {
   draft: 'DRAFT',
@@ -74,7 +75,7 @@ export const createStateMachine = (msicApplication: MsicApplication, context: Ap
           });
         } catch (e) {
           console.log(e);
-          throw new Error('Invalid transition');
+          throw new InvalidTransitionError();
         }
       }
     },
