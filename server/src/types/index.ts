@@ -1,4 +1,4 @@
-import { Prisma, User } from '../../generated/prisma-client';
+import { MsicApplicationStatus, Prisma, User } from '../../generated/prisma-client';
 
 export interface AuthPayload {
   user: User;
@@ -23,4 +23,10 @@ export interface ApolloContext {
 export interface RedisOptions {
   port: string;
   host: string;
+}
+
+export interface FsmMethodArgs {
+  transition: string;
+  from: MsicApplicationStatus;
+  to: MsicApplicationStatus;
 }

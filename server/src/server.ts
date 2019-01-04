@@ -18,7 +18,6 @@ import { validateRedisConfig } from './util';
 
 const run = async (): Promise<void> => {
   const { port: redisPort, host: redisHost } = validateRedisConfig();
-
   const defaultQueue = new Queue('default queue', `redis://${redisHost}:${redisPort}`);
   const app = express();
 

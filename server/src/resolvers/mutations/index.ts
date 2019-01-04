@@ -1,7 +1,8 @@
 import { auth } from './auth';
-import { createMsicApplication } from './createMsicApplication';
+import { createMsicApplication, submitMsicApplication } from './msicApplication';
 
 export default {
   ...auth,
-  createMsicApplication
+  createMsicApplication,
+  submitMsicApplication
 };
