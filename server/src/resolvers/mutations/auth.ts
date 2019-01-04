@@ -2,7 +2,7 @@ import { ApolloContext, AuthPayload, UserCredentials } from '../../types';
 import { compare, hash } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { UserCreateInput } from '../../../generated/prisma-client';
-import { getAppSecret } from '../../util';
+import { getAppSecret } from '../../util/util';
 
 const tokenFields = ({ id, email }: { id?: string; email?: string }) => ({ email, userId: id });
 

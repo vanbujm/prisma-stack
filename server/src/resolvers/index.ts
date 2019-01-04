@@ -1,22 +1,11 @@
-import { ApolloContext, AuthorizedApolloContext } from '../types';
 import mutations from './mutations';
-import { User } from '../../generated/prisma-client';
+import queries from './queries';
+import types from './types';
 
 const resolvers = {
-  Query: {
-    me: (_parent: any, _args: any, context: AuthorizedApolloContext) => {
-      return context.prisma.user({ id: context.user.userId });
-    }
-  },
-  Mutation: mutations,
-  User: {
-    msicApplications: ({ id }: User, {}, { prisma: { user } }: ApolloContext) => user({ id }).MsicApplications()
-  },
-  MsicApplication: {
-    user: ({ id }: User, {}, { prisma: { msicApplication } }: ApolloContext) => {
-      return msicApplication({ id }).user();
-    }
-  }
+  ...types,
+  Query: queries,
+  Mutation: mutations
 };
 
 export default resolvers;

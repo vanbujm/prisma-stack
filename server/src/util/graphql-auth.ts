@@ -1,6 +1,6 @@
 import { allow, and, deny, rule, shield } from 'graphql-shield';
-import { ApolloContext, UserMsicIdsFragmentResult } from './types';
-import { prisma } from '../generated/prisma-client';
+import { ApolloContext, UserMsicIdsFragmentResult } from '../types';
+import { prisma } from '../../generated/prisma-client';
 
 const isAuthenticated = rule()(async (_parent, _args, context: ApolloContext) => {
   return context.user !== null;
@@ -38,7 +38,9 @@ export const permissions = shield(
       createMsicApplication: isAuthenticated,
       submitMsicApplication: and(isAuthenticated, isOwnMsic)
     },
-    AuthPayload: allow
+    AuthPayload: allow,
+    MsicApplication: allow,
+    User: allow
   },
   { fallbackRule: deny }
 );

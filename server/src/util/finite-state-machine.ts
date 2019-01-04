@@ -2,40 +2,19 @@
 // @types/javascript-state-machine is for an older version
 // @ts-ignore
 import StateMachine from 'javascript-state-machine';
-import { ApolloContext, FsmMethodArgs, RedisOptions } from './types';
-import { MsicApplication } from '../generated/prisma-client';
+import { MsicApplication } from '../../generated/prisma-client';
+import { ApolloContext, FsmMethodArgs, MsicStatusHash } from '../types';
 
-export class AuthError extends Error {
-  constructor() {
-    super('Not authorized');
-  }
-}
-
-export const getAppSecret = (): string => {
-  if (!process.env.APP_SECRET) throw new Error('APP_SECRET required');
-  return process.env.APP_SECRET;
+export const msicStates: MsicStatusHash = {
+  draft: 'DRAFT',
+  submittedToAuspost: 'SUBMITTED_TO_AUSPOST',
+  auspostVerified: 'AUSPOST_VERIFIED',
+  auspostRejected: 'AUSPOST_REJECTED',
+  awaitingPickup: 'AWAITING_PICKUP',
+  complete: 'COMPLETE',
+  error: 'ERROR',
+  cancelled: 'CANCELLED'
 };
-
-export const validateRedisConfig = (): RedisOptions => {
-  const { REDIS_PORT, REDIS_HOST } = process.env;
-  if (REDIS_PORT === undefined || REDIS_HOST === undefined) {
-    throw Error('REDIS_PORT and REDIS_HOST env variables are required ');
-  }
-  if (isNaN(Number(REDIS_PORT))) throw Error('REDIS_PORT must be a number');
-
-  return { host: REDIS_HOST, port: REDIS_PORT };
-};
-
-const msicStates = [
-  'DRAFT',
-  'SUBMITTED_TO_AUSPOST',
-  'AUSPOST_VERIFIED',
-  'AUSPOST_REJECTED',
-  'AWAITING_PICKUP',
-  'COMPLETE',
-  'ERROR',
-  'CANCELLED'
-];
 
 const transitions = [
   { name: 'submit', from: 'DRAFT', to: 'SUBMITTED_TO_AUSPOST' },
@@ -81,17 +60,22 @@ export const createStateMachine = (msicApplication: MsicApplication, context: Ap
     transitions,
     methods: {
       onEnterState({ from, to }: FsmMethodArgs): Promise<MsicApplication> | undefined {
-        if (!msicStates.includes(from) || !msicStates.includes(to)) return;
-        // @ts-ignore
-        return this.prisma.updateMsicApplication({
-          data: {
-            status: to
-          },
-          where: {
-            // @ts-ignore
-            id: this.msicId
-          }
-        });
+        if (!Object.values(msicStates).includes(from) || !Object.values(msicStates).includes(to)) return;
+        try {
+          // @ts-ignore
+          return this.prisma.updateMsicApplication({
+            data: {
+              status: to
+            },
+            where: {
+              // @ts-ignore
+              id: this.msicId
+            }
+          });
+        } catch (e) {
+          console.log(e);
+          throw new Error('Invalid transition');
+        }
       }
     },
     data: ({ prisma }: ApolloContext) => ({

@@ -10,13 +10,11 @@ import helmet from 'helmet';
 import expressJwt from 'express-jwt';
 import { prisma } from '../generated/prisma-client';
 import Queue from 'bull';
-import Arena from 'bull-arena';
-
-import logging from './logging';
+import logging from './util/logging';
 import resolvers from './resolvers';
 
-import { validateRedisConfig } from './util';
-import { permissions } from './graphql-auth';
+import { createArenaHandler, validateRedisConfig } from './util/util';
+import { permissions } from './util/graphql-auth';
 
 const run = async (): Promise<void> => {
   const { port: redisPort, host: redisHost } = validateRedisConfig();
@@ -28,30 +26,6 @@ const run = async (): Promise<void> => {
     credentialsRequired: false
   });
 
-  const arenaConfig = Arena(
-    {
-      queues: [
-        {
-          // Name of the bull queue, this name must match up exactly with what you've defined in bull.
-          name: 'default-queue',
-
-          // Hostname or queue prefix, you can put whatever you want.
-          hostId: 'bull-queues',
-
-          // Redis auth.
-          redis: {
-            port: redisPort,
-            host: redisHost
-          }
-        }
-      ]
-    },
-    {
-      basePath: '/arena',
-      disableListen: true
-    }
-  );
-
   app.use(json());
   app.use(authMiddleware);
   app.use(text({ type: 'text/xml' }));
@@ -59,7 +33,7 @@ const run = async (): Promise<void> => {
   app.use(logging);
   app.use(helmet());
   app.use(cors());
-  app.use('/', arenaConfig);
+  app.use('/', createArenaHandler(redisHost, redisPort));
 
   const typeDefs = [fs.readFileSync(path.join(__dirname, 'schema.graphql'), 'utf8')];
   const schema = applyMiddleware(

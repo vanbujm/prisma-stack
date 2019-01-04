@@ -42,3 +42,14 @@ interface IdObject {
 export interface UserMsicIdsFragmentResult {
   MsicApplications: IdObject[];
 }
+
+export interface MsicStatusHash {
+  draft: MsicApplicationStatus;
+  submittedToAuspost: MsicApplicationStatus;
+  auspostVerified: MsicApplicationStatus;
+  auspostRejected: MsicApplicationStatus;
+  awaitingPickup: MsicApplicationStatus;
+  complete: MsicApplicationStatus;
+  error: MsicApplicationStatus;
+  cancelled: MsicApplicationStatus;
+}
