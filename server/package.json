@@ -20,13 +20,13 @@
     }
   },
   "lint-staged": {
-    "src/*.js": [
+    "src/**/*.js": [
       "eslint --fix",
       "git add"
     ],
-    "src/*.ts": [
+    "src/**/*.ts": [
+      "tsc --noEmit",
       "tslint --fix",
-      "tsc",
       "git add"
     ]
   },
