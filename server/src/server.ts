@@ -3,6 +3,7 @@ import path from 'path';
 import { makeExecutableSchema } from 'apollo-server';
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
+import { applyMiddleware } from 'graphql-middleware';
 import cors from 'cors';
 import { json, text, urlencoded } from 'body-parser';
 import helmet from 'helmet';
@@ -15,6 +16,7 @@ import logging from './logging';
 import resolvers from './resolvers';
 
 import { validateRedisConfig } from './util';
+import { permissions } from './graphql-auth';
 
 const run = async (): Promise<void> => {
   const { port: redisPort, host: redisHost } = validateRedisConfig();
@@ -60,11 +62,13 @@ const run = async (): Promise<void> => {
   app.use('/', arenaConfig);
 
   const typeDefs = [fs.readFileSync(path.join(__dirname, 'schema.graphql'), 'utf8')];
-  const schema = makeExecutableSchema({
-    resolvers,
-    typeDefs
-  });
-
+  const schema = applyMiddleware(
+    makeExecutableSchema({
+      resolvers,
+      typeDefs
+    }),
+    permissions
+  );
   const server = new ApolloServer({
     schema,
     context: ({ req }: { req: express.Request }) => ({

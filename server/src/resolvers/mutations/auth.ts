@@ -2,8 +2,8 @@ import { ApolloContext, AuthPayload, UserCredentials } from '../../types';
 import { compare, hash } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { UserCreateInput } from '../../../generated/prisma-client';
+import { getAppSecret } from '../../util';
 
-const appSecret = process.env.APP_SECRET || '';
 const tokenFields = ({ id, email }: { id?: string; email?: string }) => ({ email, userId: id });
 
 export const auth = {
@@ -17,7 +17,7 @@ export const auth = {
 
     return {
       user,
-      token: sign(tokenFields(user), appSecret)
+      token: sign(tokenFields(user), getAppSecret())
     };
   },
 
@@ -32,7 +32,7 @@ export const auth = {
 
     return {
       user: userFromDb,
-      token: sign(tokenFields(userFromDb), appSecret)
+      token: sign(tokenFields(userFromDb), getAppSecret())
     };
   }
 };

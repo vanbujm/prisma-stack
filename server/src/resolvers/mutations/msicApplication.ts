@@ -1,13 +1,12 @@
-import { ApolloContext } from '../../types';
-import { AuthError, createStateMachine } from '../../util';
+import { AuthorizedApolloContext } from '../../types';
+import { createStateMachine } from '../../util';
 import { MsicApplicationCreateInput } from '../../../generated/prisma-client';
 
 export const createMsicApplication = (
   _parent: any,
   { firstName, lastName, address, dob }: MsicApplicationCreateInput,
-  { prisma: { createMsicApplication }, user }: ApolloContext
+  { prisma: { createMsicApplication }, user }: AuthorizedApolloContext
 ) => {
-  if (user === undefined) throw new AuthError();
   return createMsicApplication({
     firstName,
     lastName,
@@ -17,13 +16,11 @@ export const createMsicApplication = (
   });
 };
 
-export const submitMsicApplication = async (_parent: any, { id }: { id: string }, { prisma, user }: ApolloContext) => {
-  if (user === undefined) throw new AuthError();
-
-  const recordedUser = await prisma.msicApplication({ id }).user();
-
-  if (recordedUser.id !== user.userId) throw new AuthError();
-
+export const submitMsicApplication = async (
+  _parent: any,
+  { id }: { id: string },
+  { prisma }: AuthorizedApolloContext
+) => {
   const msicApplication = await prisma.msicApplication({ id });
   const msicStateMachine = createStateMachine(msicApplication, { prisma });
   return await msicStateMachine.submit();

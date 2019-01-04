@@ -1,3 +1,6 @@
+// TODO: Add types for javascript-state-machine.
+// @types/javascript-state-machine is for an older version
+// @ts-ignore
 import StateMachine from 'javascript-state-machine';
 import { ApolloContext, FsmMethodArgs, RedisOptions } from './types';
 import { MsicApplication } from '../generated/prisma-client';
@@ -7,6 +10,11 @@ export class AuthError extends Error {
     super('Not authorized');
   }
 }
+
+export const getAppSecret = (): string => {
+  if (!process.env.APP_SECRET) throw new Error('APP_SECRET required');
+  return process.env.APP_SECRET;
+};
 
 export const validateRedisConfig = (): RedisOptions => {
   const { REDIS_PORT, REDIS_HOST } = process.env;
@@ -72,13 +80,15 @@ export const createStateMachine = (msicApplication: MsicApplication, context: Ap
   const msicStateMachine = StateMachine.factory({
     transitions,
     methods: {
-      onEnterState({ transition, from, to }: FsmMethodArgs): Promise<MsicApplication> | undefined {
+      onEnterState({ from, to }: FsmMethodArgs): Promise<MsicApplication> | undefined {
         if (!msicStates.includes(from) || !msicStates.includes(to)) return;
+        // @ts-ignore
         return this.prisma.updateMsicApplication({
           data: {
             status: to
           },
           where: {
+            // @ts-ignore
             id: this.msicId
           }
         });

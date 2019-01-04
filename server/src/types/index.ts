@@ -20,6 +20,10 @@ export interface ApolloContext {
   user?: UserAuthDetails;
 }
 
+export interface AuthorizedApolloContext extends ApolloContext {
+  user: UserAuthDetails;
+}
+
 export interface RedisOptions {
   port: string;
   host: string;
@@ -29,4 +33,12 @@ export interface FsmMethodArgs {
   transition: string;
   from: MsicApplicationStatus;
   to: MsicApplicationStatus;
+}
+
+interface IdObject {
+  id: string;
+}
+
+export interface UserMsicIdsFragmentResult {
+  MsicApplications: IdObject[];
 }
