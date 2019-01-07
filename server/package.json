@@ -25,7 +25,6 @@
       "git add"
     ],
     "src/**/*.ts": [
-      "tsc --noEmit",
       "tslint --fix",
       "git add"
     ]
