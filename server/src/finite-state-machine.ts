@@ -1,7 +1,14 @@
 import StateMachine from 'javascript-state-machine';
-import { MsicApplication } from '../../generated/prisma-client';
-import { ApolloContext, FsmMethodArgs, MsicStateMachine, MsicStatusHash, MsicTransition } from './index';
-import { InvalidTransitionError } from '../errors';
+import { MsicApplication } from '../generated/prisma-client';
+import {
+  ApolloContext,
+  FsmMethodArgs,
+  MsicStateMachine,
+  MsicStateMachineFactoryConfig,
+  MsicStatusHash,
+  MsicTransition
+} from './types';
+import { InvalidTransitionError } from './errors';
 
 export const msicStates: MsicStatusHash = {
   draft: 'DRAFT',
@@ -54,19 +61,17 @@ const transitions: MsicTransition[] = [
 ];
 
 export const createStateMachine = (msicApplication: MsicApplication, context: ApolloContext): MsicStateMachine => {
-  const msicStateMachine = StateMachine.factory({
+  const msicStateMachine = StateMachine.factory(<MsicStateMachineFactoryConfig>{
     transitions,
     methods: {
-      onEnterState({ from, to }: FsmMethodArgs): Promise<MsicApplication> | undefined {
+      onEnterState({ from, to }: FsmMethodArgs): Promise<MsicApplication> | void {
         if (!Object.values(msicStates).includes(from) || !Object.values(msicStates).includes(to)) return;
         try {
-          // @ts-ignore
           return this.prisma.updateMsicApplication({
             data: {
               status: to
             },
             where: {
-              // @ts-ignore
               id: this.msicId
             }
           });

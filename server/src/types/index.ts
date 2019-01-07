@@ -1,5 +1,5 @@
 import { MsicApplication, MsicApplicationStatus, Prisma, User } from '../../generated/prisma-client';
-import { StateMachine, Transition } from 'javascript-state-machine';
+import { StateMachine, StateMachineFactoryConfig, Transition } from 'javascript-state-machine';
 
 export interface AuthPayload {
   user: User;
@@ -85,4 +85,20 @@ export interface MsicStateMachine extends StateMachine {
   complete(): Promise<MsicApplication>;
   error(): Promise<MsicApplication>;
   cancel(): Promise<MsicApplication>;
+}
+
+interface MsicStateMachineContext {
+  readonly prisma: Prisma;
+  readonly msicId: string;
+}
+
+interface MsicMethods extends MsicStateMachineContext {
+  onEnterState(): Promise<MsicApplication>;
+}
+
+export interface MsicStateMachineFactoryConfig extends StateMachineFactoryConfig {
+  methods: MsicMethods;
+  transitions: MsicTransition[];
+  data(context: ApolloContext): MsicStateMachineContext;
+  init: MsicApplicationStatus;
 }
