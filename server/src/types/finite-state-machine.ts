@@ -1,9 +1,6 @@
-// TODO: Add types for javascript-state-machine.
-// @types/javascript-state-machine is for an older version
-// @ts-ignore
 import StateMachine from 'javascript-state-machine';
 import { MsicApplication } from '../../generated/prisma-client';
-import { ApolloContext, FsmMethodArgs, MsicStatusHash } from '../types';
+import { ApolloContext, FsmMethodArgs, MsicStateMachine, MsicStatusHash, MsicTransition } from './index';
 import { InvalidTransitionError } from '../errors';
 
 export const msicStates: MsicStatusHash = {
@@ -17,7 +14,7 @@ export const msicStates: MsicStatusHash = {
   cancelled: 'CANCELLED'
 };
 
-const transitions = [
+const transitions: MsicTransition[] = [
   { name: 'submit', from: 'DRAFT', to: 'SUBMITTED_TO_AUSPOST' },
   { name: 'auspostVerify', from: 'SUBMITTED_TO_AUSPOST', to: 'AUSPOST_VERIFIED' },
   { name: 'auspostReject', from: 'SUBMITTED_TO_AUSPOST', to: 'AUSPOST_REJECTED' },
@@ -56,7 +53,7 @@ const transitions = [
   }
 ];
 
-export const createStateMachine = (msicApplication: MsicApplication, context: ApolloContext) => {
+export const createStateMachine = (msicApplication: MsicApplication, context: ApolloContext): MsicStateMachine => {
   const msicStateMachine = StateMachine.factory({
     transitions,
     methods: {
@@ -85,5 +82,5 @@ export const createStateMachine = (msicApplication: MsicApplication, context: Ap
     }),
     init: msicApplication.status
   });
-  return new msicStateMachine(context);
+  return <MsicStateMachine>new msicStateMachine(context);
 };

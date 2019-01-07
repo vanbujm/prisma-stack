@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { AuthorizedApolloContext } from '../../types';
-import { createStateMachine } from '../../util/finite-state-machine';
+import { createStateMachine } from '../../types/finite-state-machine';
 import { MsicApplication, MsicApplicationCreateInput } from '../../../generated/prisma-client';
 import { InvalidTransitionError } from '../../errors';
 

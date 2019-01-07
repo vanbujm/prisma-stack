@@ -1,4 +1,5 @@
-import { MsicApplicationStatus, Prisma, User } from '../../generated/prisma-client';
+import { MsicApplication, MsicApplicationStatus, Prisma, User } from '../../generated/prisma-client';
+import { StateMachine, Transition } from 'javascript-state-machine';
 
 export interface AuthPayload {
   user: User;
@@ -29,18 +30,18 @@ export interface RedisOptions {
   host: string;
 }
 
-export interface FsmMethodArgs {
-  transition: string;
-  from: MsicApplicationStatus;
-  to: MsicApplicationStatus;
-}
-
 interface IdObject {
   id: string;
 }
 
 export interface UserMsicIdsFragmentResult {
   MsicApplications: IdObject[];
+}
+
+export interface FsmMethodArgs {
+  transition: string;
+  from: MsicApplicationStatus;
+  to: MsicApplicationStatus;
 }
 
 export interface MsicStatusHash {
@@ -52,4 +53,36 @@ export interface MsicStatusHash {
   complete: MsicApplicationStatus;
   error: MsicApplicationStatus;
   cancelled: MsicApplicationStatus;
+}
+
+export type TransitionName =
+  | 'submit'
+  | 'auspostVerify'
+  | 'auspostReject'
+  | 'approveCheck'
+  | 'rejectCheck'
+  | 'awaitPickup'
+  | 'complete'
+  | 'error'
+  | 'cancel';
+
+export interface MsicTransition extends Transition {
+  readonly name: TransitionName;
+  readonly from: MsicApplicationStatus | MsicApplicationStatus[];
+  readonly to: MsicApplicationStatus;
+}
+
+export interface MsicStateMachine extends StateMachine {
+  cannot(transition: TransitionName): boolean;
+  readonly state: MsicApplicationStatus;
+
+  submit(): Promise<MsicApplication>;
+  auspostVerify(): Promise<MsicApplication>;
+  auspostReject(): Promise<MsicApplication>;
+  approveCheck(): Promise<MsicApplication>;
+  rejectCheck(): Promise<MsicApplication>;
+  awaitPickup(): Promise<MsicApplication>;
+  complete(): Promise<MsicApplication>;
+  error(): Promise<MsicApplication>;
+  cancel(): Promise<MsicApplication>;
 }

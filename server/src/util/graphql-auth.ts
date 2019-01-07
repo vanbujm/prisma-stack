@@ -1,8 +1,8 @@
 import { allow, and, deny, rule, shield } from 'graphql-shield';
-import { ApolloContext, UserMsicIdsFragmentResult } from '../types';
+import { AuthorizedApolloContext, UserMsicIdsFragmentResult } from '../types';
 import { prisma } from '../../generated/prisma-client';
 
-const isAuthenticated = rule()(async (_parent, _args, context: ApolloContext) => {
+const isAuthenticated = rule()(async (_parent, _args, context: AuthorizedApolloContext) => {
   return context.user !== null;
 });
 
@@ -15,7 +15,7 @@ const fragment = `
 `;
 
 const isOwnMsic = rule()(
-  async (_parent, { id }: { id: string }, context: ApolloContext): Promise<boolean> => {
+  async (_parent, { id }: { id: string }, context: AuthorizedApolloContext): Promise<boolean> => {
     if (!context.user) return false;
     const msicApplicationQueryResult: UserMsicIdsFragmentResult = await prisma
       .user({ id: context.user.userId })
