@@ -1,4 +1,3 @@
-import { RedisOptions } from '../types';
 import Arena from 'bull-arena';
 import { AppSecretRequiredError, NaNError, RedisConfigRequiredError } from '../errors';
 
@@ -7,18 +6,18 @@ export const getAppSecret = (): string => {
   return process.env.APP_SECRET;
 };
 
-export const validateRedisConfig = (): RedisOptions => {
+export const validateRedisConfig = (): { host: string; port: number } => {
   const { REDIS_PORT, REDIS_HOST } = process.env;
   if (REDIS_PORT === undefined || REDIS_HOST === undefined) {
     throw new RedisConfigRequiredError();
   }
   if (isNaN(Number(REDIS_PORT))) throw new NaNError('REDIS_PORT');
 
-  return { host: REDIS_HOST, port: REDIS_PORT };
+  return { host: REDIS_HOST, port: Number(REDIS_PORT) };
 };
 
-export const createArenaHandler = (host: string, port: string) =>
-  Arena(
+export const createArenaHandler = (host: string, port: number) => {
+  return Arena(
     {
       queues: [
         {
@@ -30,8 +29,8 @@ export const createArenaHandler = (host: string, port: string) =>
 
           // Redis auth.
           redis: {
-            port: host,
-            host: port
+            host,
+            port
           }
         }
       ]
@@ -41,3 +40,4 @@ export const createArenaHandler = (host: string, port: string) =>
       disableListen: true
     }
   );
+};

@@ -1,5 +1,5 @@
 import { allow, and, deny, rule, shield } from 'graphql-shield';
-import { AuthorizedApolloContext, UserMsicIdsFragmentResult } from '../types';
+import { UserMsicIdsFragmentResult, AuthorizedApolloContext } from './types';
 import { prisma } from '../../generated/prisma-client';
 
 const isAuthenticated = rule()(async (_parent, _args, context: AuthorizedApolloContext) => {

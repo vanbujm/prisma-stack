@@ -1,58 +1,16 @@
-import { MsicApplication, MsicApplicationStatus, Prisma, User } from '../../generated/prisma-client';
+import { MsicApplication, MsicApplicationStatus, Prisma } from '../../generated/prisma-client';
 import { StateMachine, StateMachineFactoryConfig, Transition } from 'javascript-state-machine';
-
-export interface AuthPayload {
-  user: User;
-  token: string;
-}
-
-export interface UserCredentials {
-  readonly email: string;
-  readonly password: string;
-}
-
-export interface UserAuthDetails {
-  readonly userId: string;
-  readonly email: string;
-}
+import { UserAuthDetails } from '../graphql/types';
 
 export interface ApolloContext {
-  prisma: Prisma;
-  user?: UserAuthDetails;
-}
-
-export interface AuthorizedApolloContext extends ApolloContext {
-  user: UserAuthDetails;
-}
-
-export interface RedisOptions {
-  port: string;
-  host: string;
-}
-
-interface IdObject {
-  id: string;
-}
-
-export interface UserMsicIdsFragmentResult {
-  MsicApplications: IdObject[];
+  readonly prisma: Prisma;
+  readonly user?: UserAuthDetails;
 }
 
 export interface FsmMethodArgs {
-  transition: string;
-  from: MsicApplicationStatus;
-  to: MsicApplicationStatus;
-}
-
-export interface MsicStatusHash {
-  draft: MsicApplicationStatus;
-  submittedToAuspost: MsicApplicationStatus;
-  auspostVerified: MsicApplicationStatus;
-  auspostRejected: MsicApplicationStatus;
-  awaitingPickup: MsicApplicationStatus;
-  complete: MsicApplicationStatus;
-  error: MsicApplicationStatus;
-  cancelled: MsicApplicationStatus;
+  readonly transition: string;
+  readonly from: MsicApplicationStatus;
+  readonly to: MsicApplicationStatus;
 }
 
 export type TransitionName =
@@ -97,8 +55,8 @@ interface MsicMethods extends MsicStateMachineContext {
 }
 
 export interface MsicStateMachineFactoryConfig extends StateMachineFactoryConfig {
-  methods: MsicMethods;
-  transitions: MsicTransition[];
+  readonly methods: MsicMethods;
+  readonly transitions: MsicTransition[];
   data(context: ApolloContext): MsicStateMachineContext;
-  init: MsicApplicationStatus;
+  readonly init: MsicApplicationStatus;
 }

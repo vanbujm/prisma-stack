@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import { AuthorizedApolloContext } from '../../types';
-import { createStateMachine } from '../../finite-state-machine';
-import { MsicApplication, MsicApplicationCreateInput } from '../../../generated/prisma-client';
-import { InvalidTransitionError } from '../../errors';
+import { createStateMachine } from '../../../finite-state-machine';
+import { MsicApplication, MsicApplicationCreateInput } from '../../../../generated/prisma-client';
+import { InvalidTransitionError } from '../../../errors';
 
 export const createMsicApplication = (
   _parent: any,

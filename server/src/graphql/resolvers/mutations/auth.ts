@@ -1,9 +1,10 @@
-import { ApolloContext, AuthPayload, UserCredentials } from '../../types';
+import { ApolloContext } from '../../../types';
 import { compare, hash } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
-import { UserCreateInput } from '../../../generated/prisma-client';
-import { getAppSecret } from '../../util/util';
-import { AuthError, NoUserFoundError } from '../../errors';
+import { UserCreateInput } from '../../../../generated/prisma-client';
+import { getAppSecret } from '../../../util/util';
+import { AuthError, NoUserFoundError } from '../../../errors';
+import { AuthPayload, UserCredentials } from '../../types';
 
 const tokenFields = ({ id, email }: { id?: string; email?: string }) => ({ email, userId: id });
 

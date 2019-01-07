@@ -1,5 +1,5 @@
 declare module 'bull-arena' {
-  import { RedisOptions } from './index';
+  import { RedisOptions } from 'ioredis';
 
   function Arena(options: Arena.ArenaOptions, webOptions: Arena.ArenaWebOptions): Express.RequestHandler;
 

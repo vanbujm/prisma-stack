@@ -1,5 +1,5 @@
-import { User } from '../../../generated/prisma-client';
-import { ApolloContext } from '../../types';
+import { User } from '../../../../generated/prisma-client';
+import { ApolloContext } from '../../../types';
 
 export default {
   User: {

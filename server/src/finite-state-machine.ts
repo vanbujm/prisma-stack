@@ -1,14 +1,8 @@
 import StateMachine from 'javascript-state-machine';
 import { MsicApplication } from '../generated/prisma-client';
-import {
-  ApolloContext,
-  FsmMethodArgs,
-  MsicStateMachine,
-  MsicStateMachineFactoryConfig,
-  MsicStatusHash,
-  MsicTransition
-} from './types';
+import { ApolloContext, FsmMethodArgs, MsicStateMachine, MsicStateMachineFactoryConfig, MsicTransition } from './types';
 import { InvalidTransitionError } from './errors';
+import { MsicStatusHash } from './graphql/types';
 
 export const msicStates: MsicStatusHash = {
   draft: 'DRAFT',
