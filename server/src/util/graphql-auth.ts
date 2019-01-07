@@ -14,6 +14,8 @@ const fragment = `
   }
 `;
 
+// TODO: This isn't where this should live. Kill it and use a viewer model.
+// See: https://github.com/robcrowley/graphql-react-demo
 const isOwnMsic = rule()(
   async (_parent, { id }: { id: string }, context: AuthorizedApolloContext): Promise<boolean> => {
     if (!context.user) return false;
@@ -26,7 +28,6 @@ const isOwnMsic = rule()(
 );
 
 // Permissions
-
 export const permissions = shield(
   {
     Query: {
