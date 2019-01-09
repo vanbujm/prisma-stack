@@ -1,12 +1,9 @@
-import { allow, and, deny, rule, shield } from 'graphql-shield';
-import { UserMsicIdsFragmentResult, AuthorizedApolloContext } from './types';
-import { prisma } from '../../generated/prisma-client';
+import { allow, deny, or, rule, shield } from 'graphql-shield';
+import { AuthorizedApolloContext, UserMsicIdsFragmentResult } from './types';
+import { prisma, User } from '../../generated/prisma-client';
+import { ApolloContext, MsicID } from '../types';
 
-const isAuthenticated = rule()(async (_parent, _args, context: AuthorizedApolloContext) => {
-  return context.user !== null;
-});
-
-const fragment = `
+const userMsicIdsFragment = `
   fragment UserMsicIds on User {
     MsicApplications {
       id
@@ -14,16 +11,32 @@ const fragment = `
   }
 `;
 
-// TODO: This isn't where this should live. Kill it and use a viewer model.
-// See: https://github.com/robcrowley/graphql-react-demo
-const isOwnMsic = rule()(
-  async (_parent, { id }: { id: string }, context: AuthorizedApolloContext): Promise<boolean> => {
-    if (!context.user) return false;
-    const msicApplicationQueryResult: UserMsicIdsFragmentResult = await prisma
-      .user({ id: context.user.userId })
-      .$fragment(fragment);
-    const msicIds = msicApplicationQueryResult.MsicApplications.map(({ id }: { id: string }) => id);
-    return msicIds.includes(id);
+const fetchMsicIdsForUser = async (userId: string): Promise<string[]> => {
+  const msicApplicationQueryResult: UserMsicIdsFragmentResult = await prisma
+    .user({ id: userId })
+    .$fragment(userMsicIdsFragment);
+  return msicApplicationQueryResult.MsicApplications.map(({ id }: MsicID) => id);
+};
+
+const isAuthenticated = rule({ cache: 'contextual' })(async (_parent, _args, context: ApolloContext) => {
+  return !!context.user;
+});
+
+const isOwnMsic = rule({ cache: 'strict', fragment: 'fragment MsicID on MsicApplication { id }' })(
+  async ({ id: msicId }: MsicID, _args, context: AuthorizedApolloContext): Promise<boolean> => {
+    return (await fetchMsicIdsForUser(context.user.userId)).includes(msicId);
+  }
+);
+
+const isAdmin = rule({ cache: 'strict' })(
+  async (_parents, _args, context: AuthorizedApolloContext): Promise<boolean> => {
+    return false;
+  }
+);
+
+const isOwnUser = rule({ cache: 'strict', fragment: 'fragment UserID on User { id }' })(
+  async ({ id }: Pick<User, 'id'>, _args, context: AuthorizedApolloContext): Promise<boolean> => {
+    return context.user.userId === id;
   }
 );
 
@@ -31,17 +44,18 @@ const isOwnMsic = rule()(
 export const permissions = shield(
   {
     Query: {
-      me: isAuthenticated
+      me: isAuthenticated,
+      users: allow
     },
     Mutation: {
-      signup: allow,
+      signup: isAuthenticated,
       login: allow,
       createMsicApplication: isAuthenticated,
-      submitMsicApplication: and(isAuthenticated, isOwnMsic)
+      submitMsicApplication: isAuthenticated
     },
     AuthPayload: allow,
-    MsicApplication: allow,
-    User: allow
+    MsicApplication: isOwnMsic,
+    User: or(isAdmin, isOwnUser)
   },
-  { fallbackRule: deny }
+  { fallbackRule: deny, allowExternalErrors: process.env.NODE_ENV === 'development' }
 );

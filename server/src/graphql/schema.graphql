@@ -13,6 +13,7 @@ enum MsicApplicationStatus {
 }
 
 type Query {
+    # Get your own user info
     me: User!
 }
 
