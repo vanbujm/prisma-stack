@@ -39,20 +39,14 @@ export function calculateCheckSum(input: string): string {
 
   if (input && input.length === 29) {
     // valid input data
-    let sum = 0;
-
-    // tslint:disable-next-line:no-increment-decrement
-    for (let i = 0; i < input.length; i++) {
-      const inputChar = input.charAt(i).toLocaleUpperCase();
-      // tslint:disable-next-line:radix
-      let toIntValue = parseInt(inputChar);
-
-      if (isNaN(toIntValue)) {
-        toIntValue = inputChar.charCodeAt(0) - 48;
-      }
-
-      sum += toIntValue * weights[i];
-    }
+    const sum = input
+      .split('')
+      .reduce(
+        (runningTotal, value, i) =>
+          runningTotal +
+          (/\d/.test(value) ? parseInt(value, 10) : value.toLocaleUpperCase().charCodeAt(0) - 48) * weights[i],
+        0
+      );
 
     const checkSumNumber = 97 - (sum % 97);
 
