@@ -1,7 +1,8 @@
 import path from 'path';
-import { makeExecutableSchema } from 'apollo-server';
+import { makeExecutableSchema, makeRemoteExecutableSchema, mergeSchemas } from 'apollo-server';
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
+import { HttpLink } from 'apollo-link-http';
 import { applyMiddleware } from 'graphql-middleware';
 import { importSchema } from 'graphql-import';
 import cors from 'cors';
@@ -9,6 +10,7 @@ import { json, text, urlencoded } from 'body-parser';
 import helmet from 'helmet';
 import expressJwt from 'express-jwt';
 import { prisma } from '../generated/prisma-client';
+import { typeDefs as prismaTypeDefs } from '../generated/prisma-client/prisma-schema';
 import Queue from 'bull';
 import logging from './util/logging';
 import resolvers from './graphql/resolvers';
@@ -35,11 +37,29 @@ const run = async (): Promise<void> => {
   app.use(cors());
   app.use('/', createArenaHandler(redisHost, redisPort));
 
+  // 1. Create Apollo Link that's connected to the underlying GraphQL API
+  const link = new HttpLink({
+    fetch,
+    uri: 'http://localhost:4466'
+  });
+
+  // 3. Create the executable schema based on schema definition and Apollo Link
+  const prismaSchema = makeRemoteExecutableSchema({
+    link,
+    schema: prismaTypeDefs
+  });
+
   const typeDefs = importSchema(path.join(__dirname, 'graphql/schema.graphql'));
+
   const schema = applyMiddleware(
-    makeExecutableSchema({
-      resolvers,
-      typeDefs
+    mergeSchemas({
+      schemas: [
+        prismaSchema,
+        makeExecutableSchema({
+          resolvers,
+          typeDefs
+        })
+      ]
     }),
     permissions
   );

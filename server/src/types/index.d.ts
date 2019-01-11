@@ -60,3 +60,5 @@ export interface MsicStateMachineFactoryConfig extends StateMachineFactoryConfig
   data(context: ApolloContext): MsicStateMachineContext;
   readonly init: MsicApplicationStatus;
 }
+
+export type MsicID = Pick<MsicApplication, 'id'>;
